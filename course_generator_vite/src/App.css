@@ -1,0 +1,443 @@
+/* -------------------- Reset & Base -------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+:root {
+  /* Tune these two to your taste */
+  --content-max: 820px;  /* try 760px or 700px if you want it tighter */
+  --content-vw: 92vw;    /* maximum width relative to viewport on small screens */
+}
+
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden; /* prevent main page scroll; inner card scrolls */
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  color: #e6edf6;
+  background: #0b1220;
+  /* If you want the background image: */
+  background:
+    linear-gradient(180deg, rgba(7, 10, 18, 0.86), rgba(7, 10, 18, 0.9)),
+    url(./bg.png);
+  background-size: cover;
+  background-position: left;
+  background-repeat: no-repeat;
+}
+
+/* -------------------- Legacy root (safe to keep) -------------------- */
+.App {
+  position: relative;
+  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  color: black;
+  overflow: hidden;
+}
+
+/* -------------------- New root layout -------------------- */
+.app-viewport {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.2rem clamp(1rem, 3vw, 2rem);
+  box-sizing: border-box;
+}
+
+/* Make sure parents allow children to shrink */
+.course-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  height: 100%;
+  min-height: 0;              /* IMPORTANT */
+}
+
+/* Let the panel fill the remaining space and allow shrinking */
+.course-panel {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;  /* scrollable top + visible buttons */
+  gap: 0.8rem;
+  flex: 1;                                  /* grow to fill space */
+  min-height: 0;                             /* IMPORTANT */
+  justify-items: center;                     /* <-- add this line */
+}
+
+
+/* Ensure the scroll area actually scrolls rather than expanding */
+.content-card {
+  width: min(var(--content-max), var(--content-vw));
+  min-height: 0;  /* IMPORTANT when it's a grid/flex child */
+  display: flex;
+  flex-direction: column;
+}
+
+.content-card__scroll {
+  overflow: auto;
+  min-height: 0;  /* IMPORTANT so it can shrink */
+}
+
+
+/* -------------------- Header -------------------- */
+/* Header block centered */
+.header {
+  display: flex;
+  flex-direction: column;     /* stack logo above text */
+  align-items: center;        /* center horizontally */
+  justify-content: center;    /* nice symmetry on the landing view */
+  gap: 0.6rem;
+  text-align: center;         /* center title/subtitle text */
+}
+
+/* Logo sizing kept responsive */
+.App-logo {
+  width: clamp(42px, 6vw, 72px);
+  height: auto;
+  pointer-events: none;
+}
+
+/* Title & subtitle styles */
+.header-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* ensure perfect centering */
+  gap: 0.25rem;
+}
+
+.header-title {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.8vw, 2rem);
+  font-weight: 750;
+  color: #e6edf6;
+  letter-spacing: 0.2px;
+}
+
+.header-subtitle {
+  margin: 0;
+  opacity: 0.85;
+  font-size: clamp(0.9rem, 2vw, 1.05rem);
+  color: #cdd6ea;
+}
+
+/* Fade-out remains the same: header will unmount during loading */
+.fading-out {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: all 300ms ease;
+}
+
+
+/* -------------------- Prompt Input (Centered & Symmetric) -------------------- */
+/* Prompt Input (Centered & Stacked) */
+.input-container {
+  width: min(800px, 95%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;     /* single column: textarea on top */
+  gap: 0.9rem;
+  align-items: center;
+  justify-items: center;          /* center the child elements */
+}
+
+.story-input {
+  width: 100%;
+  min-height: 110px;
+  resize: vertical;
+  border-radius: 14px;
+  border: 2px solid #1c2437;
+  background: #0e172a;
+  color: #e6edf6;
+  padding: 0.95rem 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  outline: none;
+  box-shadow: inset 0 0 0 1px transparent;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.input-actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;       /* center the button */
+}
+
+.generate-button {
+  white-space: nowrap;
+  height: 46px;
+  padding: 0 1.2rem;
+  border-radius: 12px;
+  border: 1px solid #2b3a5a;
+  background: linear-gradient(180deg, #1b2640, #111a30);
+  color: #dfe7f5;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.05s ease;
+}
+
+.generate-button:hover { filter: brightness(1.07); }
+.generate-button:active { transform: translateY(1px); }
+
+/* Mobile: full-width button looks nicer */
+@media (max-width: 600px) {
+  .generate-button {
+    width: 100%;
+  }
+}
+
+/* -------------------- Scrollable Content Card -------------------- */
+.content-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: clamp(0.9rem, 2.2vw, 1.2rem);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
+  min-height: 0; /* required for grid child to allow scrolling */
+  display: flex;
+  flex-direction: column;
+}
+
+.content-card__header {
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 0.6rem;
+  text-align: center; /* center the title */
+}
+
+.content-card__title {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.6vw, 1.8rem);
+  line-height: 1.2;
+  letter-spacing: 0.2px;
+  font-weight: 750;
+  color: #f5f7ff;
+  text-align: center; /* ensure centered */
+}
+
+/* The scroll area itself */
+.content-card__scroll {
+  overflow: auto;
+  min-height: 0;          /* so it can actually shrink/grow */
+  padding-right: 0.25rem; /* small breathing room near scrollbar */
+}
+
+/* Nicer scrollbar for the inner area */
+.content-card__scroll::-webkit-scrollbar {
+  width: 10px;
+}
+.content-card__scroll::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.18);
+  border-radius: 999px;
+}
+.content-card__scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Section typography: headings centered, paragraphs left-aligned */
+.content-section {
+  margin: 0 0 1rem 0;
+}
+.content-section__heading {
+  margin: 0.6rem 0 0.4rem 0;
+  font-size: clamp(1.05rem, 2.1vw, 1.25rem);
+  font-weight: 700;
+  color: #f2f5ff;
+  letter-spacing: 0.2px;
+  text-align: center;     /* centered section titles */
+}
+.content-section__paragraph {
+  margin: 0.35rem 0;
+  color: #d7dff0;
+  line-height: 1.7;
+  font-size: clamp(0.96rem, 1.8vw, 1.05rem);
+  text-align: left;       /* body text left-aligned */
+}
+
+/* -------------------- Choices Bar (fits below the card) -------------------- */
+.choices-bar {
+  width: min(var(--content-max), var(--content-vw));
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+.choice-chip {
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid #2a3654;
+  background: linear-gradient(180deg, #111a30, #0f182c);
+  color: #dfe7f6;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 1rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: filter 0.2s ease, transform 0.05s ease;
+}
+.choice-chip:hover {
+  filter: brightness(1.07);
+}
+.choice-chip:active {
+  transform: translateY(1px);
+}
+
+/* -------------------- Loading (keep your animations) -------------------- */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+}
+
+.loading-logo {
+  height: 10vmin;
+  animation: scaleUp 0.1s linear forwards, rotate 2s linear infinite 0.1s;
+  margin-bottom: 40px;
+  z-index: 2;
+}
+
+.loading-text {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  color: #e6edf6;
+  font-size: 1.5em;
+  animation: blink 1.2s infinite;
+  margin-top: 40px;
+}
+
+/* Your existing keyframes preserved */
+@keyframes scaleUp {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* -------------------- Legacy/unused audio bits (kept harmless) -------------------- */
+.play-button {
+  display: none; /* hidden since audio is removed; keep if needed later */
+}
+.play-icon { display: none; }
+.audio-player { display: none; }
+
+/* Animated text overlay (legacy) */
+.animated-text { display: none; }
+
+/* Background overlay legacy hooks (kept harmless) */
+.background-image { display: none; }
+
+/* -------------------- Responsive Tweaks -------------------- */
+@media (max-width: 600px) {
+  .App-logo {
+    height: 30vmin; /* your legacy mobile logo size */
+  }
+
+  .input-container {
+    width: 95%;
+    grid-template-columns: 1fr;
+  }
+
+  .generate-button {
+    height: 44px;
+    width: 100%;
+  }
+}
+
+/* Make choices footer accept a wide row under the 2 chips */
+.choices-bar {
+  /* you already set width in your earlier tweaks if desired */
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+/* A full-width row below the two chips */
+.choices-row-wide {
+  grid-column: 1 / -1;          /* span both columns */
+  display: grid;
+  grid-template-columns: 1fr auto;  /* deep button grows, back is auto width */
+  gap: 0.8rem;
+  margin-top: 0.4rem;
+}
+
+/* Selected state for chosen branch */
+.choice-chip--selected {
+  border-color: #4a7cff;
+  background: linear-gradient(180deg, #1b2a50, #142342);
+  color: #ffffff;
+}
+
+/* Deep button styling */
+.deep-button {
+  height: 46px;
+  border-radius: 12px;
+  border: 1px solid #2b3a5a;
+  background: linear-gradient(180deg, #1b2640, #111a30);
+  color: #dfe7f5;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0 1rem;
+  text-align: center;
+  transition: filter 0.2s ease, transform 0.05s ease;
+}
+.deep-button:hover { filter: brightness(1.07); }
+.deep-button:active { transform: translateY(1px); }
+
+.deep-button--selected {
+  border-color: #4a7cff;
+  background: linear-gradient(180deg, #1b2a50, #142342);
+  color: #ffffff;
+}
+
+/* Back button styling */
+.back-button {
+  height: 46px;
+  padding: 0 1rem;
+  border-radius: 12px;
+  border: 1px solid #384867;
+  background: linear-gradient(180deg, #0f182c, #0c1526);
+  color: #cfe1ff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.05s ease;
+  white-space: nowrap;
+}
+.back-button:hover { filter: brightness(1.05); }
+.back-button:active { transform: translateY(1px); }
+
+/* Mobile: stack everything gracefully */
+@media (max-width: 600px) {
+  .choices-bar {
+    grid-template-columns: 1fr;
+  }
+  .choices-row-wide {
+    grid-template-columns: 1fr; /* deep and back buttons stack */
+  }
+  .back-button {
+    width: 100%;
+  }
+}
